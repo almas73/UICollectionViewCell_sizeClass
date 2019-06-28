@@ -5,19 +5,20 @@ class CollectionViewController: UIViewController {
   
   @IBOutlet var collectionView: UICollectionView!
   let cellIdentifier = "CustomCell"
+  let stackIdentifier = "StackViewCell"
+  let regularIdentifier = "RegularCell"
 
   override func viewDidLoad() {
     super.viewDidLoad()
     
     let customCellNib = UINib(nibName: cellIdentifier, bundle: nil)
-    self.collectionView.registerNib(customCellNib, forCellWithReuseIdentifier: cellIdentifier)
+    collectionView.registerNib(customCellNib, forCellWithReuseIdentifier: cellIdentifier)
+    
+    let itemSize = traitCollection.horizontalSizeClass == .Regular ? CGSize(width: 240, height: 194)
+                                                                   : CGSize(width: 340, height: 128)
+    (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.itemSize = itemSize
   }
-  
-  override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    collectionView.collectionViewLayout.invalidateLayout()
-  }
-  
+
 }
 
 extension CollectionViewController: UICollectionViewDataSource {
@@ -27,19 +28,8 @@ extension CollectionViewController: UICollectionViewDataSource {
   }
   
   func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellIdentifier, forIndexPath: indexPath)
-    return cell
+    let identifier = indexPath.row % 2 == 0 ? regularIdentifier : stackIdentifier
+    return collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath)
   }
   
-}
-
-extension CollectionViewController: UICollectionViewDelegateFlowLayout {
-  func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClass.Regular) {
-      return CGSizeMake(240, 194)
-    }
-    else {
-      return CGSizeMake(340, 128)
-    }
-  }
 }
